@@ -1,6 +1,5 @@
 ﻿using FunctionApp1.Helpers;
 using Microsoft.Azure.Cosmos.Table;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,45 +14,18 @@ namespace FunctionApp1
         private readonly CloudTable _secondaryCloudTable;
 
         public ToDoEntityDataStore(
-            CloudTable primaryCloudTable,
-            CloudTable secondaryCloudTable = null)
+            CloudTableClient primaryCloudTableClient,
+            CloudTableClient secondaryCloudTableClient = null)
         {
-            _primaryCloudTable = primaryCloudTable;
-            _secondaryCloudTable = secondaryCloudTable;
-        }
-
-        public ToDoEntityDataStore(
-            string primaryConnectionString,
-            string secondaryConnectionString = null)
-        {
-            if (string.IsNullOrWhiteSpace(primaryConnectionString))
-            {
-                throw new ArgumentNullException(nameof(primaryConnectionString));
-            }
-
-            var cloudStorageAccount =
-                CloudStorageAccount.Parse(primaryConnectionString);
-
-            var cloudTableClient =
-                cloudStorageAccount.CreateCloudTableClient();
-
             _primaryCloudTable =
-                cloudTableClient.GetTableReference("todos");
+                primaryCloudTableClient.GetTableReference("todos");
 
             _primaryCloudTable.CreateIfNotExists();
 
-            // Create the secondary cloud table provider if a secondary connection string has been provided
-
-            if (!string.IsNullOrWhiteSpace(secondaryConnectionString))
+            if (secondaryCloudTableClient != null)
             {
-                cloudStorageAccount =
-                    CloudStorageAccount.Parse(secondaryConnectionString);
-
-                cloudTableClient =
-                    cloudStorageAccount.CreateCloudTableClient();
-
                 _secondaryCloudTable =
-                    cloudTableClient.GetTableReference("todos");
+                    secondaryCloudTableClient.GetTableReference("todos");
 
                 _secondaryCloudTable.CreateIfNotExists();
             }

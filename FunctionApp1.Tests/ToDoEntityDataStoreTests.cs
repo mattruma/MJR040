@@ -20,7 +20,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             var toDoEntity =
                 _faker.GenerateToDoEntity();
@@ -61,8 +61,12 @@ namespace FunctionApp1.Tests
         {
             // Arrange
 
+            var primaryCloudTableClient =
+                new Mock<CloudTableClient>(
+                    new Uri("http://localhost.com"), null, null);
+
             var primaryCloudTable = new Mock<CloudTable>(
-                new Uri("http://localhost.com/PrimaryConnectionString"), null);
+                new Uri("http://localhost.com"), null);
 
             var primaryCloudTableResult =
                 new TableResult
@@ -73,9 +77,12 @@ namespace FunctionApp1.Tests
             primaryCloudTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>()))
                     .ReturnsAsync(primaryCloudTableResult);
 
+            primaryCloudTableClient.Setup(x => x.GetTableReference("todos"))
+                    .Returns(primaryCloudTable.Object);
+
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    primaryCloudTable.Object);
+                    primaryCloudTableClient.Object);
 
             var toDoEntity =
                 _faker.GenerateToDoEntity();
@@ -96,8 +103,12 @@ namespace FunctionApp1.Tests
         {
             // Arrange
 
+            var primaryCloudTableClient =
+                new Mock<CloudTableClient>(
+                    new Uri("http://localhost.com"), null, null);
+
             var primaryCloudTable = new Mock<CloudTable>(
-                new Uri("https://localhost.com/primary"), null);
+                new Uri("https://localhost.com"), null);
 
             var primaryCloudTableResult =
                 new TableResult
@@ -107,6 +118,13 @@ namespace FunctionApp1.Tests
 
             primaryCloudTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>()))
                     .ReturnsAsync(primaryCloudTableResult);
+
+            primaryCloudTableClient.Setup(x => x.GetTableReference("todos"))
+                    .Returns(primaryCloudTable.Object);
+
+            var secondaryCloudTableClient =
+                new Mock<CloudTableClient>(
+                    new Uri("http://localhost.com"), null, null);
 
             var secondaryCloudTable = new Mock<CloudTable>(
                 new Uri("https://localhost.com/secondary"), null);
@@ -120,10 +138,13 @@ namespace FunctionApp1.Tests
             secondaryCloudTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>()))
                     .ReturnsAsync(secondaryCloudTableResult);
 
+            secondaryCloudTableClient.Setup(x => x.GetTableReference("todos"))
+                    .Returns(secondaryCloudTable.Object);
+
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    primaryCloudTable.Object,
-                    secondaryCloudTable.Object);
+                    primaryCloudTableClient.Object,
+                    secondaryCloudTableClient.Object);
 
             var toDoEntity =
                 _faker.GenerateToDoEntity();
@@ -155,7 +176,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             // Action
 
@@ -180,7 +201,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             // Action
 
@@ -210,7 +231,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             // Action
 
@@ -247,7 +268,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             // Action
 
@@ -284,7 +305,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             toDoEntity.Description = _faker.Lorem.Paragraph(1);
 
@@ -330,7 +351,7 @@ namespace FunctionApp1.Tests
 
             var toDoEntityStore =
                 new ToDoEntityDataStore(
-                    _configuration["AzureTableStorageOptions:ConnectionString"]);
+                    _cloudTableClient);
 
             // Action
 
