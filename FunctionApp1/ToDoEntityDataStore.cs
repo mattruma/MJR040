@@ -1,5 +1,6 @@
 ﻿using FunctionApp1.Helpers;
 using Microsoft.Azure.Cosmos.Table;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,18 +15,22 @@ namespace FunctionApp1
         private readonly CloudTable _secondaryCloudTable;
 
         public ToDoEntityDataStore(
-            CloudTableClient primaryCloudTableClient,
-            CloudTableClient secondaryCloudTableClient = null)
+            ToDoEntityDataStoreOptions toDoEntityDataStoreOptions)
         {
+            if (toDoEntityDataStoreOptions == null)
+            {
+                throw new ArgumentNullException(nameof(toDoEntityDataStoreOptions));
+            }
+
             _primaryCloudTable =
-                primaryCloudTableClient.GetTableReference("todos");
+                toDoEntityDataStoreOptions.PrimaryCloudTableClient.GetTableReference("todos");
 
             _primaryCloudTable.CreateIfNotExists();
 
-            if (secondaryCloudTableClient != null)
+            if (toDoEntityDataStoreOptions.SecondaryCloudTableClient != null)
             {
                 _secondaryCloudTable =
-                    secondaryCloudTableClient.GetTableReference("todos");
+                    toDoEntityDataStoreOptions.SecondaryCloudTableClient.GetTableReference("todos");
 
                 _secondaryCloudTable.CreateIfNotExists();
             }

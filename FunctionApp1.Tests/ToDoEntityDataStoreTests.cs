@@ -18,16 +18,22 @@ namespace FunctionApp1.Tests
         {
             // Arrange
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             var toDoEntity =
                 _faker.GenerateToDoEntity();
 
             // Action
 
-            await toDoEntityStore.AddAsync(
+            await toDoEntityDataStore.AddAsync(
                 toDoEntity);
 
             // Assert
@@ -80,16 +86,22 @@ namespace FunctionApp1.Tests
             primaryCloudTableClient.Setup(x => x.GetTableReference("todos"))
                     .Returns(primaryCloudTable.Object);
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = primaryCloudTableClient.Object
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    primaryCloudTableClient.Object);
+                    toDoEntityDataStoreOptions);
 
             var toDoEntity =
                 _faker.GenerateToDoEntity();
 
             // Action
 
-            Func<Task> action = async () => await toDoEntityStore.AddAsync(toDoEntity);
+            Func<Task> action = async () => await toDoEntityDataStore.AddAsync(toDoEntity);
 
             // Assert
 
@@ -141,17 +153,23 @@ namespace FunctionApp1.Tests
             secondaryCloudTableClient.Setup(x => x.GetTableReference("todos"))
                     .Returns(secondaryCloudTable.Object);
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = primaryCloudTableClient.Object,
+                    SecondaryCloudTableClient = secondaryCloudTableClient.Object
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    primaryCloudTableClient.Object,
-                    secondaryCloudTableClient.Object);
+                    toDoEntityDataStoreOptions);
 
             var toDoEntity =
                 _faker.GenerateToDoEntity();
 
             // Action
 
-            await toDoEntityStore.AddAsync(toDoEntity);
+            await toDoEntityDataStore.AddAsync(toDoEntity);
 
             // Assert
 
@@ -174,13 +192,19 @@ namespace FunctionApp1.Tests
 
             await cloudTable.ExecuteAsync(tableOperation);
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             // Action
 
-            var toDoEntityFetched = await toDoEntityStore.GetByIdAsync(
+            var toDoEntityFetched = await toDoEntityDataStore.GetByIdAsync(
                 toDoEntity.RowKey);
 
             // Assert
@@ -199,13 +223,19 @@ namespace FunctionApp1.Tests
         {
             // Arrange
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             // Action
 
-            Func<Task> action = async () => await toDoEntityStore.GetByIdAsync(
+            Func<Task> action = async () => await toDoEntityDataStore.GetByIdAsync(
                 Guid.NewGuid().ToString());
 
             // Assert
@@ -229,13 +259,19 @@ namespace FunctionApp1.Tests
 
             await cloudTable.ExecuteAsync(tableOperation);
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             // Action
 
-            await toDoEntityStore.DeleteAsync(
+            await toDoEntityDataStore.DeleteAsync(
                 toDoEntity);
 
             // Assert
@@ -266,13 +302,19 @@ namespace FunctionApp1.Tests
 
             await cloudTable.ExecuteAsync(tableOperation);
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             // Action
 
-            await toDoEntityStore.DeleteByIdAsync(
+            await toDoEntityDataStore.DeleteByIdAsync(
                 toDoEntity.RowKey);
 
             // Assert
@@ -303,15 +345,21 @@ namespace FunctionApp1.Tests
 
             await cloudTable.ExecuteAsync(tableOperation);
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             toDoEntity.Description = _faker.Lorem.Paragraph(1);
 
             // Action
 
-            await toDoEntityStore.UpdateAsync(
+            await toDoEntityDataStore.UpdateAsync(
                 toDoEntity);
 
             // Assert
@@ -349,14 +397,20 @@ namespace FunctionApp1.Tests
                 await cloudTable.ExecuteAsync(tableOperation);
             }
 
-            var toDoEntityStore =
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions
+                {
+                    PrimaryCloudTableClient = _cloudTableClient
+                };
+
+            var toDoEntityDataStore =
                 new ToDoEntityDataStore(
-                    _cloudTableClient);
+                    toDoEntityDataStoreOptions);
 
             // Action
 
             var toDoEntityFetchedList =
-                await toDoEntityStore.ListAsync();
+                await toDoEntityDataStore.ListAsync();
 
             // Assert
 

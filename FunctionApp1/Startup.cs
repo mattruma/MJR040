@@ -1,5 +1,7 @@
-﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+﻿using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 [assembly: FunctionsStartup(typeof(FunctionApp1.Startup))]
 namespace FunctionApp1
@@ -11,6 +13,13 @@ namespace FunctionApp1
         {
             var services =
                 builder.Services;
+
+            var primaryCloudStorageAccount =
+                CloudStorageAccount.Parse(
+                    Environment.GetEnvironmentVariable("AzureTableStorageOptions:PrimaryConnectionString"));
+
+            var primaryCloudClient =
+                primaryCloudStorageAccount.CreateCloudTableClient();
 
             services.AddTransient<IToDoEntityDataStore, ToDoEntityDataStore>();
         }
