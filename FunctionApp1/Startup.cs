@@ -14,12 +14,28 @@ namespace FunctionApp1
             var services =
                 builder.Services;
 
+            var toDoEntityDataStoreOptions =
+                new ToDoEntityDataStoreOptions();
+
             var primaryCloudStorageAccount =
                 CloudStorageAccount.Parse(
                     Environment.GetEnvironmentVariable("AzureTableStorageOptions:PrimaryConnectionString"));
 
-            var primaryCloudClient =
+            toDoEntityDataStoreOptions.PrimaryCloudTableClient =
                 primaryCloudStorageAccount.CreateCloudTableClient();
+
+            if (!string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("AzureTableStorageOptions:SecondaryConnectionString")))
+            {
+                var secondaryCloudStorageAccount =
+                    CloudStorageAccount.Parse(
+                        Environment.GetEnvironmentVariable("AzureTableStorageOptions:SecondaryConnectionString"));
+
+                toDoEntityDataStoreOptions.SecondaryCloudTableClient =
+                    secondaryCloudStorageAccount.CreateCloudTableClient();
+            }
+
+            services.AddSingleton(toDoEntityDataStoreOptions);
 
             services.AddTransient<IToDoEntityDataStore, ToDoEntityDataStore>();
         }
