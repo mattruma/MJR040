@@ -4,9 +4,10 @@ using System.Net.Http;
 
 namespace FunctionApp1.Helpers
 {
-    public static class TableResultExtensions
+    internal static class TableResultExtensions
     {
-        public static void EnsureSuccessStatusCode(this TableResult tableResult)
+        internal static void EnsureSuccessStatusCode(
+            this TableResult tableResult)
         {
             switch (tableResult.HttpStatusCode)
             {

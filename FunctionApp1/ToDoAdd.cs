@@ -1,3 +1,5 @@
+using FunctionApp1.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -18,10 +20,13 @@ namespace FunctionApp1
 
         [FunctionName(nameof(ToDoAdd))]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] ToDoAddOptions toDoAddOptions,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation($"{nameof(ToDoAdd)} processed a request.");
+
+            var toDoAddOptions =
+                await req.Body.DeserializeAsync<ToDoAddOptions>();
 
             var toDoEntity =
                 new ToDoEntity

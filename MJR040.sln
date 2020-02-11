@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29721.120
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionApp1", "FunctionApp1\FunctionApp1.csproj", "{429E854B-792F-46CE-9654-93B61B1B291B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp1.Tests", "FunctionApp1.Tests\FunctionApp1.Tests.csproj", "{13F5EBC8-2B0C-4FE9-82A3-E16EEA4DB32D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionApp1.Tests", "FunctionApp1.Tests\FunctionApp1.Tests.csproj", "{13F5EBC8-2B0C-4FE9-82A3-E16EEA4DB32D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

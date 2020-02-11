@@ -2,6 +2,7 @@
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FunctionApp1
@@ -110,6 +111,8 @@ namespace FunctionApp1
             var toDoEntity =
                 await this.GetByIdAsync(id);
 
+            if (toDoEntity == null) return;
+
             await this.DeleteAsync(toDoEntity);
         }
 
@@ -148,6 +151,11 @@ namespace FunctionApp1
 
             var tableResult =
                 await cloudTable.ExecuteAsync(tableOperation);
+
+            if (tableResult.HttpStatusCode == (int)HttpStatusCode.NotFound)
+            {
+                return null;
+            }
 
             tableResult.EnsureSuccessStatusCode();
 
