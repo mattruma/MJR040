@@ -1,10 +1,9 @@
-﻿using Microsoft.Azure.Cosmos.Table;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace FunctionApp1
+namespace ClassLibrary1
 {
-    public interface IEntityDataStore<TKey, TEntity> where TEntity : TableEntity
+    public interface IEntityDataStore<TKey, TEntity> where TEntity : IEntity
     {
         Task AddAsync(
             TEntity entity);

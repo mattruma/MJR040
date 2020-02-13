@@ -1,10 +1,8 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using ClassLibrary2;
 
 namespace FunctionApp1
 {
-    public class ToDoEntityDataStoreOptions
+    public class ToDoEntityDataStoreOptions : EntityDataStoreOptions
     {
-        public CloudTableClient PrimaryCloudTableClient { get; set; }
-        public CloudTableClient SecondaryCloudTableClient { get; set; }
     }
 }
