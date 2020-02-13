@@ -2,9 +2,9 @@
 
 namespace FunctionApp1
 {
-    public class ToDoEntityDataStore : EntityDataStore<string, ToDoEntity>, IToDoEntityDataStore
+    public class ToDoCommentEntityDataStore : ChildEntityDataStore<string, string, ToDoCommentEntity>, IToDoCommentEntityDataStore
     {
-        public ToDoEntityDataStore(
+        public ToDoCommentEntityDataStore(
             EntityDataStoreOptions entityDataStoreOptions) : base("todos", entityDataStoreOptions)
         {
         }

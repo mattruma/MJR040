@@ -1,5 +1,6 @@
 ﻿using ClassLibrary1;
 using Microsoft.Azure.Cosmos.Table;
+using System;
 
 namespace ClassLibrary2
 {
@@ -7,8 +8,11 @@ namespace ClassLibrary2
     {
         public TKey Id { get; set; }
 
-        public Entity()
+        public DateTime CreatedOn { get; set; }
+
+        protected Entity()
         {
+            this.CreatedOn = DateTime.UtcNow;
         }
     }
 }

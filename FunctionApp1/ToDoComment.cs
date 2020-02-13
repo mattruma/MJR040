@@ -1,0 +1,25 @@
+﻿using System;
+
+namespace FunctionApp1
+{
+    public class ToDoComment
+    {
+        public string Id { get; set; }
+        public string ToDoId { get; set; }
+        public string Body { get; set; }
+        public DateTime CreatedOn { get; set; }
+
+        public ToDoComment()
+        {
+        }
+
+        public ToDoComment(
+            ToDoCommentEntity toDoCommentEntity)
+        {
+            this.Id = toDoCommentEntity.RowKey;
+            this.ToDoId = toDoCommentEntity.PartitionKey;
+            this.Body = toDoCommentEntity.Body;
+            this.CreatedOn = toDoCommentEntity.CreatedOn;
+        }
+    }
+}

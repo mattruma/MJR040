@@ -32,6 +32,11 @@ namespace ClassLibrary2
                 throw new ArgumentNullException(nameof(entityDataStoreOptions));
             }
 
+            if (entityDataStoreOptions.PrimaryCloudTableClient == null)
+            {
+                throw new ArgumentNullException(nameof(entityDataStoreOptions.PrimaryCloudTableClient));
+            }
+
             _primaryCloudTable =
                 entityDataStoreOptions.PrimaryCloudTableClient.GetTableReference(tableName);
 
@@ -49,6 +54,9 @@ namespace ClassLibrary2
         public async Task AddAsync(
             TEntity entity)
         {
+            entity.RowKey = entity.Id.ToString();
+            entity.PartitionKey = entity.Id.ToString();
+
             try
             {
                 await this.AddAsync(entity, _primaryCloudTable);
@@ -79,7 +87,7 @@ namespace ClassLibrary2
             tableResult.EnsureSuccessStatusCode();
         }
 
-        public async Task DeleteAsync(
+        private async Task DeleteAsync(
             TEntity entity)
         {
             try
@@ -234,6 +242,9 @@ namespace ClassLibrary2
         public async Task UpdateAsync(
             TEntity entity)
         {
+            entity.RowKey = entity.Id.ToString();
+            entity.PartitionKey = entity.Id.ToString();
+
             try
             {
                 await this.UpdateAsync(entity, _primaryCloudTable);

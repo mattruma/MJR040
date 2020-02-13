@@ -11,8 +11,6 @@ namespace FunctionApp1
         public ToDoEntity()
         {
             this.Id = Guid.NewGuid().ToString();
-            this.RowKey = this.Id;
-            this.PartitionKey = this.Id;
         }
     }
 }

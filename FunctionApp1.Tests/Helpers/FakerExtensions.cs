@@ -16,5 +16,18 @@ namespace FunctionApp1.Tests.Helpers
 
             return toDoEntity;
         }
+        public static ToDoCommentEntity GenerateToDoCommentEntity(
+           this Faker faker,
+           string parentId)
+        {
+            var toDoCommentEntity =
+                new ToDoCommentEntity(parentId)
+                {
+                    Body = faker.Lorem.Paragraph(1),
+                    CreatedOn = faker.Date.Recent()
+                };
+
+            return toDoCommentEntity;
+        }
     }
 }

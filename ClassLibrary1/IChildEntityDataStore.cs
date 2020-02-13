@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1
 {
-    public interface IChildEntityDataStore<TParentKey, TKey, TEntity> where TEntity : IChildEntity<TParentKey, TKey>
+    public interface IChildEntityDataStore<TParentKey, TKey, TEntity> where TEntity : IChildEntity<TKey>
     {
         Task AddAsync(
-            TEntity entity);
-        Task DeleteAsync(
+            TParentKey parentId,
             TEntity entity);
         Task DeleteByIdAsync(
             TParentKey parentId,
@@ -16,8 +15,9 @@ namespace ClassLibrary1
             TParentKey parentId,
             TKey id);
         Task<IEnumerable<TEntity>> ListAsync(
-            string query = null);
+            TParentKey parentId);
         Task UpdateAsync(
+            TParentKey parentId,
             TEntity entity);
     }
 }

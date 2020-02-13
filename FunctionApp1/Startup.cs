@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using ClassLibrary2;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,14 +15,14 @@ namespace FunctionApp1
             var services =
                 builder.Services;
 
-            var toDoEntityDataStoreOptions =
-                new ToDoEntityDataStoreOptions();
+            var entityDataStoreOptions =
+                new EntityDataStoreOptions();
 
             var primaryCloudStorageAccount =
                 CloudStorageAccount.Parse(
                     Environment.GetEnvironmentVariable("AzureTableStorageOptions:PrimaryConnectionString"));
 
-            toDoEntityDataStoreOptions.PrimaryCloudTableClient =
+            entityDataStoreOptions.PrimaryCloudTableClient =
                 primaryCloudStorageAccount.CreateCloudTableClient();
 
             if (!string.IsNullOrWhiteSpace(
@@ -31,13 +32,14 @@ namespace FunctionApp1
                     CloudStorageAccount.Parse(
                         Environment.GetEnvironmentVariable("AzureTableStorageOptions:SecondaryConnectionString"));
 
-                toDoEntityDataStoreOptions.SecondaryCloudTableClient =
+                entityDataStoreOptions.SecondaryCloudTableClient =
                     secondaryCloudStorageAccount.CreateCloudTableClient();
             }
 
-            services.AddSingleton(toDoEntityDataStoreOptions);
+            services.AddSingleton(entityDataStoreOptions);
 
             services.AddTransient<IToDoEntityDataStore, ToDoEntityDataStore>();
+            services.AddTransient<IToDoCommentEntityDataStore, ToDoCommentEntityDataStore>();
         }
     }
 }

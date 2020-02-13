@@ -1,6 +1,6 @@
 ﻿namespace ClassLibrary1
 {
-    public interface IChildEntity<TParentKey, TKey>
+    public interface IChildEntity<TKey>
     {
     }
 }

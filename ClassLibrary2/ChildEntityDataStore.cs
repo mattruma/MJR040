@@ -3,6 +3,7 @@ using ClassLibrary2.Helpers;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace ClassLibrary2
     // https://www.c-sharpcorner.com/article/azure-storage-crud-operations-in-mvc-using-c-sharp-azure-table-storage-part-one/
     // http://www.mattruma.com/adventures-with-azure-table-storage-default-retry-policy/
 
-    public abstract class ChildEntityDataStore<TParentKey, TKey, TEntity> : IChildEntityDataStore<TParentKey, TKey, TEntity> where TEntity : ChildEntity<TParentKey, TKey>, new()
+    public abstract class ChildEntityDataStore<TParentKey, TKey, TEntity> : IChildEntityDataStore<TParentKey, TKey, TEntity> where TEntity : ChildEntity<TKey>, new()
     {
         protected readonly CloudTable _primaryCloudTable;
         protected readonly CloudTable _secondaryCloudTable;
@@ -46,9 +47,13 @@ namespace ClassLibrary2
             }
         }
 
-        public async Task AddAsync(
+        public virtual async Task AddAsync(
+            TParentKey parentId,
             TEntity entity)
         {
+            entity.RowKey = entity.Id.ToString();
+            entity.PartitionKey = parentId.ToString();
+
             try
             {
                 await this.AddAsync(entity, _primaryCloudTable);
@@ -79,7 +84,7 @@ namespace ClassLibrary2
             tableResult.EnsureSuccessStatusCode();
         }
 
-        public async Task DeleteAsync(
+        private async Task DeleteAsync(
             TEntity entity)
         {
             try
@@ -112,7 +117,7 @@ namespace ClassLibrary2
             tableResult.EnsureSuccessStatusCode();
         }
 
-        public async Task DeleteByIdAsync(
+        public virtual async Task DeleteByIdAsync(
             TParentKey parentId,
             TKey id)
         {
@@ -124,7 +129,7 @@ namespace ClassLibrary2
             await this.DeleteAsync(entity);
         }
 
-        public async Task<TEntity> GetByIdAsync(
+        public virtual async Task<TEntity> GetByIdAsync(
             TParentKey parentId,
             TKey id)
         {
@@ -172,16 +177,52 @@ namespace ClassLibrary2
             return tableResult.Result as TEntity;
         }
 
-        public Task<IEnumerable<TEntity>> ListAsync(
-            string query = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(
+        public virtual async Task UpdateAsync(
+            TParentKey parentId,
             TEntity entity)
         {
-            throw new NotImplementedException();
+            entity.RowKey = entity.Id.ToString();
+            entity.PartitionKey = parentId.ToString();
+
+            try
+            {
+                await this.UpdateAsync(entity, _primaryCloudTable);
+            }
+            catch
+            {
+                if (this.AutoFailover)
+                {
+                    await this.UpdateAsync(entity, _secondaryCloudTable);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private async Task UpdateAsync(
+            TEntity entity,
+            CloudTable cloudTable)
+        {
+            var tableOperation =
+                TableOperation.InsertOrReplace(entity);
+
+            var tableResult =
+                await cloudTable.ExecuteAsync(tableOperation);
+
+            tableResult.EnsureSuccessStatusCode();
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> ListAsync(
+            TParentKey parentId)
+        {
+            var entityList =
+                _primaryCloudTable.CreateQuery<TEntity>()
+                    .Where(x => x.PartitionKey == parentId.ToString())
+                    .ToList();
+
+            return entityList;
         }
     }
 }

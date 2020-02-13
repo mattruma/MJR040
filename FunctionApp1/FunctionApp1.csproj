@@ -4,7 +4,9 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ToDoCommentEntityDataStoreOptions.cs" />
     <Compile Remove="ToDoEntityDataStore2.cs" />
+    <Compile Remove="ToDoEntityDataStoreOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.6" />

@@ -7,8 +7,6 @@ namespace ClassLibrary1
     {
         Task AddAsync(
             TEntity entity);
-        Task DeleteAsync(
-            TEntity entity);
         Task DeleteByIdAsync(
             TKey id);
         Task<TEntity> GetByIdAsync(
