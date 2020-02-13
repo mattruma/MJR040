@@ -219,7 +219,7 @@ namespace FunctionApp1.Tests
 
 
         [Fact]
-        public void When_GetByIdAsync_And_EntityDoesNotExist_Then_ThrowException()
+        public async Task When_GetByIdAsync_And_EntityDoesNotExist_Then_ReturnNull()
         {
             // Arrange
 
@@ -235,12 +235,13 @@ namespace FunctionApp1.Tests
 
             // Action
 
-            Func<Task> action = async () => await toDoEntityDataStore.GetByIdAsync(
-                Guid.NewGuid().ToString());
+            var toDoEntity =
+                await toDoEntityDataStore.GetByIdAsync(
+                    Guid.NewGuid().ToString());
 
             // Assert
 
-            action.Should().Throw<HttpRequestException>().WithMessage("Something went wrong in table operation, a 404 status code was returned.");
+            toDoEntity.Should().BeNull();
         }
 
         [Fact]
