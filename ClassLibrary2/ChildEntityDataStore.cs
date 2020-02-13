@@ -11,14 +11,14 @@ namespace ClassLibrary2
     // https://www.c-sharpcorner.com/article/azure-storage-crud-operations-in-mvc-using-c-sharp-azure-table-storage-part-one/
     // http://www.mattruma.com/adventures-with-azure-table-storage-default-retry-policy/
 
-    public abstract class EntityDataStore<TKey, TEntity> : IEntityDataStore<TKey, TEntity> where TEntity : Entity<TKey>, new()
+    public abstract class ChildEntityDataStore<TParentKey, TKey, TEntity> : IChildEntityDataStore<TParentKey, TKey, TEntity> where TEntity : ChildEntity<TParentKey, TKey>, new()
     {
         protected readonly CloudTable _primaryCloudTable;
         protected readonly CloudTable _secondaryCloudTable;
 
         protected bool AutoFailover => _secondaryCloudTable != null;
 
-        protected EntityDataStore(
+        protected ChildEntityDataStore(
             string tableName,
             EntityDataStoreOptions entityDataStoreOptions)
         {
@@ -113,10 +113,11 @@ namespace ClassLibrary2
         }
 
         public async Task DeleteByIdAsync(
+            TParentKey parentId,
             TKey id)
         {
             var entity =
-                await this.GetByIdAsync(id);
+                await this.GetByIdAsync(parentId, id);
 
             if (entity == null) return;
 
@@ -124,12 +125,13 @@ namespace ClassLibrary2
         }
 
         public async Task<TEntity> GetByIdAsync(
+            TParentKey parentId,
             TKey id)
         {
             try
             {
                 var entity =
-                    await this.GetByIdAsync(id, _primaryCloudTable);
+                    await this.GetByIdAsync(parentId, id, _primaryCloudTable);
 
                 return entity;
             }
@@ -138,7 +140,7 @@ namespace ClassLibrary2
                 if (this.AutoFailover)
                 {
                     var entity =
-                        await this.GetByIdAsync(id, _secondaryCloudTable);
+                        await this.GetByIdAsync(parentId, id, _secondaryCloudTable);
 
                     return entity;
                 }
@@ -150,11 +152,12 @@ namespace ClassLibrary2
         }
 
         private async Task<TEntity> GetByIdAsync(
+            TParentKey parentId,
             TKey id,
             CloudTable cloudTable)
         {
             var tableOperation =
-                TableOperation.Retrieve<TEntity>(id.ToString(), id.ToString());
+                TableOperation.Retrieve<TEntity>(parentId.ToString(), id.ToString());
 
             var tableResult =
                 await cloudTable.ExecuteAsync(tableOperation);
@@ -169,99 +172,16 @@ namespace ClassLibrary2
             return tableResult.Result as TEntity;
         }
 
-        public async Task<IEnumerable<TEntity>> ListAsync(
+        public Task<IEnumerable<TEntity>> ListAsync(
             string query = null)
         {
-            try
-            {
-                var entityList =
-                    await this.ListAsync(query, _primaryCloudTable);
-
-                return entityList;
-            }
-            catch
-            {
-                if (this.AutoFailover)
-                {
-                    var entityList =
-                        await this.ListAsync(query, _secondaryCloudTable);
-
-                    return entityList;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            throw new NotImplementedException();
         }
 
-        // https://stackoverflow.com/questions/26257822/azure-table-query-async-continuation-token-always-returned
-
-        private async Task<IEnumerable<TEntity>> ListAsync(
-            string query,
-            CloudTable cloudTable)
-        {
-            var tableQuery =
-                new TableQuery<TEntity>();
-
-            if (!string.IsNullOrWhiteSpace(query))
-            {
-                tableQuery =
-                    new TableQuery<TEntity>().Where(query);
-            }
-
-            var entityList =
-                new List<TEntity>();
-
-            var continuationToken =
-                default(TableContinuationToken);
-
-            do
-            {
-                var tableQuerySegement =
-                    await cloudTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
-
-                continuationToken =
-                    tableQuerySegement.ContinuationToken;
-
-                entityList.AddRange(tableQuerySegement.Results);
-            }
-            while (continuationToken != null);
-
-            return entityList;
-        }
-
-        public async Task UpdateAsync(
+        public Task UpdateAsync(
             TEntity entity)
         {
-            try
-            {
-                await this.UpdateAsync(entity, _primaryCloudTable);
-            }
-            catch
-            {
-                if (this.AutoFailover)
-                {
-                    await this.UpdateAsync(entity, _secondaryCloudTable);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
-        private async Task UpdateAsync(
-            TEntity entity,
-            CloudTable cloudTable)
-        {
-            var tableOperation =
-                TableOperation.InsertOrReplace(entity);
-
-            var tableResult =
-                await cloudTable.ExecuteAsync(tableOperation);
-
-            tableResult.EnsureSuccessStatusCode();
+            throw new NotImplementedException();
         }
     }
 }

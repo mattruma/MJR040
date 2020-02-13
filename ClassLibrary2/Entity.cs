@@ -3,8 +3,10 @@ using Microsoft.Azure.Cosmos.Table;
 
 namespace ClassLibrary2
 {
-    public class Entity : TableEntity, IEntity
+    public abstract class Entity<TKey> : TableEntity, IEntity<TKey>
     {
+        public TKey Id { get; set; }
+
         public Entity()
         {
         }

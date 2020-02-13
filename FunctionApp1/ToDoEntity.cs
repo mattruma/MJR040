@@ -1,18 +1,18 @@
-﻿using ClassLibrary1;
-using Microsoft.Azure.Cosmos.Table;
+﻿using ClassLibrary2;
 using System;
 
 namespace FunctionApp1
 {
-    public class ToDoEntity : TableEntity, IEntity
+    public class ToDoEntity : Entity<string>
     {
         public string Status { get; set; }
         public string Description { get; set; }
 
         public ToDoEntity()
         {
-            this.RowKey = Guid.NewGuid().ToString();
-            this.PartitionKey = this.RowKey;
+            this.Id = Guid.NewGuid().ToString();
+            this.RowKey = this.Id;
+            this.PartitionKey = this.Id;
         }
     }
 }
