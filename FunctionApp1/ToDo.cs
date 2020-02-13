@@ -1,4 +1,6 @@
-﻿namespace FunctionApp1
+﻿using FunctionApp1.Data;
+
+namespace FunctionApp1
 {
     public class ToDo
     {

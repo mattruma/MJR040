@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FunctionApp1.Data;
+using System;
 
 namespace FunctionApp1
 {

@@ -3,7 +3,6 @@ using ClassLibrary2.Helpers;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -200,6 +199,68 @@ namespace ClassLibrary2
                 }
             }
         }
+        protected async Task<IEnumerable<TEntity>> ListAsync(
+            string query = null)
+        {
+            try
+            {
+                var entityList =
+                    await this.ListAsync(query, _primaryCloudTable);
+
+                return entityList;
+            }
+            catch
+            {
+                if (this.AutoFailover)
+                {
+                    var entityList =
+                        await this.ListAsync(query, _secondaryCloudTable);
+
+                    return entityList;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        // https://stackoverflow.com/questions/26257822/azure-table-query-async-continuation-token-always-returned
+
+        private async Task<IEnumerable<TEntity>> ListAsync(
+            string query,
+            CloudTable cloudTable)
+        {
+            var tableQuery =
+                new TableQuery<TEntity>();
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                tableQuery =
+                    new TableQuery<TEntity>().Where(query);
+            }
+
+            var entityList =
+                new List<TEntity>();
+
+            var continuationToken =
+                default(TableContinuationToken);
+
+            do
+            {
+                var tableQuerySegement =
+                    await cloudTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
+
+                continuationToken =
+                    tableQuerySegement.ContinuationToken;
+
+                entityList.AddRange(tableQuerySegement.Results);
+            }
+            while (continuationToken != null);
+
+            return entityList;
+        }
+
 
         private async Task UpdateAsync(
             TEntity entity,
@@ -212,17 +273,6 @@ namespace ClassLibrary2
                 await cloudTable.ExecuteAsync(tableOperation);
 
             tableResult.EnsureSuccessStatusCode();
-        }
-
-        public virtual async Task<IEnumerable<TEntity>> ListAsync(
-            TParentKey parentId)
-        {
-            var entityList =
-                _primaryCloudTable.CreateQuery<TEntity>()
-                    .Where(x => x.PartitionKey == parentId.ToString())
-                    .ToList();
-
-            return entityList;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace ClassLibrary1
 {
@@ -8,14 +7,15 @@ namespace ClassLibrary1
         Task AddAsync(
             TParentKey parentId,
             TEntity entity);
+
         Task DeleteByIdAsync(
             TParentKey parentId,
             TKey id);
+
         Task<TEntity> GetByIdAsync(
             TParentKey parentId,
             TKey id);
-        Task<IEnumerable<TEntity>> ListAsync(
-            TParentKey parentId);
+
         Task UpdateAsync(
             TParentKey parentId,
             TEntity entity);

@@ -1,3 +1,4 @@
+using FunctionApp1.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -25,11 +26,8 @@ namespace FunctionApp1
         {
             log.LogInformation($"{nameof(ToDoList)} function processed a request.");
 
-            string query = req.Query["query"];
-
             var toDoEntityList =
-                await _toDoEntityDataStore.ListAsync(
-                    query);
+                await _toDoEntityDataStore.ListAsync();
 
             var toDoList =
                 toDoEntityList.Select(

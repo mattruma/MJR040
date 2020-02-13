@@ -177,7 +177,7 @@ namespace ClassLibrary2
             return tableResult.Result as TEntity;
         }
 
-        public async Task<IEnumerable<TEntity>> ListAsync(
+        protected async Task<IEnumerable<TEntity>> ListAsync(
             string query = null)
         {
             try

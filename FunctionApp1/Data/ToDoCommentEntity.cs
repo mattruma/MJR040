@@ -1,22 +1,21 @@
 ﻿using ClassLibrary2;
+using Newtonsoft.Json;
 using System;
 
-namespace FunctionApp1
+namespace FunctionApp1.Data
 {
     public class ToDoCommentEntity : ChildEntity<string>
     {
-        public string ToDoId { get; set; }
+        [JsonProperty("object")]
+        public override string Object => "Comment";
+
+        [JsonProperty("body")]
         public string Body { get; set; }
+
 
         public ToDoCommentEntity()
         {
-        }
-
-        public ToDoCommentEntity(
-            string toDoId)
-        {
             this.Id = Guid.NewGuid().ToString();
-            this.ToDoId = toDoId;
         }
     }
 }

@@ -1,5 +1,6 @@
 using ClassLibrary2;
 using FluentAssertions;
+using FunctionApp1.Data;
 using FunctionApp1.Tests.Helpers;
 using Microsoft.Azure.Cosmos.Table;
 using Moq;
@@ -206,7 +207,7 @@ namespace FunctionApp1.Tests
             // Action
 
             var toDoEntityFetched = await toDoEntityDataStore.GetByIdAsync(
-                toDoEntity.RowKey);
+                toDoEntity.Id);
 
             // Assert
 
@@ -274,7 +275,7 @@ namespace FunctionApp1.Tests
             // Action
 
             await toDoEntityDataStore.DeleteByIdAsync(
-                toDoEntity.RowKey);
+                toDoEntity.Id);
 
             // Assert
 
