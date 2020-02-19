@@ -6,9 +6,6 @@ namespace FunctionApp1.Data
 {
     public class ToDoEntity : Entity<string>
     {
-        [JsonProperty("object")]
-        public override string Object => "ToDo";
-
         [JsonProperty("status")]
         public string Status { get; set; }
 
@@ -18,6 +15,7 @@ namespace FunctionApp1.Data
         public ToDoEntity()
         {
             this.Id = Guid.NewGuid().ToString();
+            this.Object = "ToDo";
         }
     }
 }

@@ -11,7 +11,7 @@ namespace ClassLibrary2
         public TKey Id { get; set; }
 
         [JsonProperty("object")]
-        public abstract string Object { get; }
+        public string Object { get; set; }
 
         [JsonProperty("createdOn")]
         public DateTime CreatedOn { get; set; }

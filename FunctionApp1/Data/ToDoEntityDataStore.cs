@@ -13,7 +13,8 @@ namespace FunctionApp1.Data
 
         public async Task<IEnumerable<ToDoEntity>> ListAsync()
         {
-            var query = "Object eq 'ToDo'";
+            var query =
+                "Object eq 'ToDo'";
 
             return await base.ListAsync(query);
         }

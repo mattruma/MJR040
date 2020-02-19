@@ -15,7 +15,7 @@ namespace FunctionApp1.Data
             string toDoId)
         {
             var query =
-                $"PartionKey eq '{toDoId}' Object eq 'ToDoComment'";
+                $"PartitionKey eq '{toDoId}' and Object eq 'Comment'";
 
             return await base.ListAsync(query);
         }
