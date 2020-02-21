@@ -1,24 +1,24 @@
 ﻿using ClassLibrary1;
-using ClassLibrary2.Helpers;
+using ClassLibrary1.Helpers;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace ClassLibrary2
+namespace ClassLibrary1
 {
     // https://www.c-sharpcorner.com/article/azure-storage-crud-operations-in-mvc-using-c-sharp-azure-table-storage-part-one/
     // http://www.mattruma.com/adventures-with-azure-table-storage-default-retry-policy/
 
-    public abstract class ChildEntityDataStore<TParentKey, TKey, TEntity> : IChildEntityDataStore<TParentKey, TKey, TEntity> where TEntity : ChildEntity<TKey>, new()
+    public abstract class EntityDataStore<TKey, TEntity> : IEntityDataStore<TKey, TEntity> where TEntity : Entity<TKey>, new()
     {
         protected readonly CloudTable _primaryCloudTable;
         protected readonly CloudTable _secondaryCloudTable;
 
         protected bool AutoFailover => _secondaryCloudTable != null;
 
-        protected ChildEntityDataStore(
+        protected EntityDataStore(
             string tableName,
             EntityDataStoreOptions entityDataStoreOptions)
         {
@@ -30,6 +30,11 @@ namespace ClassLibrary2
             if (entityDataStoreOptions == null)
             {
                 throw new ArgumentNullException(nameof(entityDataStoreOptions));
+            }
+
+            if (entityDataStoreOptions.PrimaryCloudTableClient == null)
+            {
+                throw new ArgumentNullException(nameof(entityDataStoreOptions.PrimaryCloudTableClient));
             }
 
             _primaryCloudTable =
@@ -46,12 +51,16 @@ namespace ClassLibrary2
             }
         }
 
-        public virtual async Task AddAsync(
-            TParentKey parentId,
+        public async Task AddAsync(
             TEntity entity)
         {
+            if (string.IsNullOrWhiteSpace(entity.Id.ToString()))
+            {
+                throw new ArgumentNullException(nameof(entity.Id));
+            }
+
             entity.RowKey = entity.Id.ToString();
-            entity.PartitionKey = parentId.ToString();
+            entity.PartitionKey = entity.Id.ToString();
 
             try
             {
@@ -116,26 +125,34 @@ namespace ClassLibrary2
             tableResult.EnsureSuccessStatusCode();
         }
 
-        public virtual async Task DeleteByIdAsync(
-            TParentKey parentId,
+        public async Task DeleteByIdAsync(
             TKey id)
         {
+            if (string.IsNullOrWhiteSpace(id.ToString()))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             var entity =
-                await this.GetByIdAsync(parentId, id);
+                await this.GetByIdAsync(id);
 
             if (entity == null) return;
 
             await this.DeleteAsync(entity);
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(
-            TParentKey parentId,
+        public async Task<TEntity> GetByIdAsync(
             TKey id)
         {
+            if (string.IsNullOrWhiteSpace(id.ToString()))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             try
             {
                 var entity =
-                    await this.GetByIdAsync(parentId, id, _primaryCloudTable);
+                    await this.GetByIdAsync(id, _primaryCloudTable);
 
                 return entity;
             }
@@ -144,7 +161,7 @@ namespace ClassLibrary2
                 if (this.AutoFailover)
                 {
                     var entity =
-                        await this.GetByIdAsync(parentId, id, _secondaryCloudTable);
+                        await this.GetByIdAsync(id, _secondaryCloudTable);
 
                     return entity;
                 }
@@ -156,12 +173,11 @@ namespace ClassLibrary2
         }
 
         private async Task<TEntity> GetByIdAsync(
-            TParentKey parentId,
             TKey id,
             CloudTable cloudTable)
         {
             var tableOperation =
-                TableOperation.Retrieve<TEntity>(parentId.ToString(), id.ToString());
+                TableOperation.Retrieve<TEntity>(id.ToString(), id.ToString());
 
             var tableResult =
                 await cloudTable.ExecuteAsync(tableOperation);
@@ -176,29 +192,6 @@ namespace ClassLibrary2
             return tableResult.Result as TEntity;
         }
 
-        public virtual async Task UpdateAsync(
-            TParentKey parentId,
-            TEntity entity)
-        {
-            entity.RowKey = entity.Id.ToString();
-            entity.PartitionKey = parentId.ToString();
-
-            try
-            {
-                await this.UpdateAsync(entity, _primaryCloudTable);
-            }
-            catch
-            {
-                if (this.AutoFailover)
-                {
-                    await this.UpdateAsync(entity, _secondaryCloudTable);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
         protected async Task<IEnumerable<TEntity>> ListAsync(
             string query = null)
         {
@@ -261,6 +254,33 @@ namespace ClassLibrary2
             return entityList;
         }
 
+        public async Task UpdateAsync(
+            TEntity entity)
+        {
+            if (string.IsNullOrWhiteSpace(entity.Id.ToString()))
+            {
+                throw new ArgumentNullException(nameof(entity.Id));
+            }
+
+            entity.RowKey = entity.Id.ToString();
+            entity.PartitionKey = entity.Id.ToString();
+
+            try
+            {
+                await this.UpdateAsync(entity, _primaryCloudTable);
+            }
+            catch
+            {
+                if (this.AutoFailover)
+                {
+                    await this.UpdateAsync(entity, _secondaryCloudTable);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
 
         private async Task UpdateAsync(
             TEntity entity,

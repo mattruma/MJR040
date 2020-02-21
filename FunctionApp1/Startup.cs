@@ -1,4 +1,4 @@
-﻿using ClassLibrary2;
+﻿using ClassLibrary1;
 using FunctionApp1.Data;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;

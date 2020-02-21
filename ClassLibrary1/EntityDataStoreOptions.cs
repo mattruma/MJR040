@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 
-namespace ClassLibrary2
+namespace ClassLibrary1
 {
     public class EntityDataStoreOptions
     {

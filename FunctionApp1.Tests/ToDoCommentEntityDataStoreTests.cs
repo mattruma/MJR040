@@ -1,4 +1,4 @@
-﻿using ClassLibrary2;
+﻿using ClassLibrary1;
 using FluentAssertions;
 using FunctionApp1.Data;
 using FunctionApp1.Tests.Helpers;

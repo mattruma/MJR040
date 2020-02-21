@@ -3,7 +3,7 @@ using Microsoft.Azure.Cosmos.Table;
 using Newtonsoft.Json;
 using System;
 
-namespace ClassLibrary2
+namespace ClassLibrary1
 {
     public abstract class Entity<TKey> : TableEntity, IEntity<TKey>
     {

@@ -1,4 +1,4 @@
-﻿using ClassLibrary2;
+﻿using ClassLibrary1;
 using Newtonsoft.Json;
 using System;
 
@@ -12,7 +12,7 @@ namespace FunctionApp1.Data
         [JsonProperty("description")]
         public string Description { get; set; }
 
-        public ToDoEntity()
+        public ToDoEntity() : base()
         {
             this.Id = Guid.NewGuid().ToString();
             this.Object = "ToDo";

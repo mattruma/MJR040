@@ -1,4 +1,4 @@
-using ClassLibrary2;
+using ClassLibrary1;
 using FluentAssertions;
 using FunctionApp1.Data;
 using FunctionApp1.Tests.Helpers;
@@ -65,7 +65,7 @@ namespace FunctionApp1.Tests
         // https://fluentassertions.com/exceptions/
 
         [Fact]
-        public void When_AddAsync_And_PrimaryStorageNotAvailable_ThenThrowsHttpStatusException()
+        public void When_AddAsync_And_PrimaryStorageNotAvailable_Then_ThrowsHttpStatusException()
         {
             // Arrange
 
@@ -113,7 +113,7 @@ namespace FunctionApp1.Tests
         // https://stackoverflow.com/questions/9136674/verify-a-method-call-using-moq
 
         [Fact]
-        public async Task When_AddAsync_And_PrimaryStorageNotAvailable_ThenFailOverToSecondaryStorage()
+        public async Task When_AddAsync_And_PrimaryStorageNotAvailable_Then_FailOverToSecondaryStorage()
         {
             // Arrange
 

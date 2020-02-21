@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace ClassLibrary2.Helpers
+namespace ClassLibrary1.Helpers
 {
     internal static class TableResultExtensions
     {

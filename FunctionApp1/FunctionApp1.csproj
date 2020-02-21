@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.csproj" />
-    <ProjectReference Include="..\ClassLibrary2\ClassLibrary2.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
