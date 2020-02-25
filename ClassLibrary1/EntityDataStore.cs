@@ -1,5 +1,4 @@
-﻿using ClassLibrary1;
-using ClassLibrary1.Helpers;
+﻿using ClassLibrary1.Helpers;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
